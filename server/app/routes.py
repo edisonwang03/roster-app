@@ -1,17 +1,7 @@
-from flask import Flask, request
+from flask import request
 from bson.objectid import ObjectId
-import os
-from dotenv import load_dotenv
-from pymongo import MongoClient
-
-load_dotenv()
-
-MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-
-client = MongoClient(MONGO_DB_URI)
-db = client['roster']
-
-app = Flask(__name__)
+from app import app
+from app import db
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
@@ -35,6 +25,3 @@ def get_student(student_id):
     student = db.students.find_one({'_id': ObjectId(student_id)})
     student['_id'] = str(student['_id'])  # Convert ObjectId to string
     return student
-
-if __name__ == "__main__":
-    app.run(debug=True)
