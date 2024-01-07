@@ -25,3 +25,12 @@ def get_student(student_id):
     student = db.students.find_one({'_id': ObjectId(student_id)})
     student['_id'] = str(student['_id'])  # Convert ObjectId to string
     return student
+
+@app.route('/get_all_students', methods=['GET'])
+def get_all_students():
+    students = db.students.find()
+    students_list = []
+    for student in students:
+        student['_id'] = str(student['_id'])  # Convert ObjectId to string
+        students_list.append(student)
+    return {"students": students_list}
