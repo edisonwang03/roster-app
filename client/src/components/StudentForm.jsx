@@ -14,10 +14,18 @@ function StudentForm({ onSubmit, onCancel, isUpdating }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit({ firstName: firstName,
-        lastName: lastName,
-        major: major,
-        graduationYear: gradYear });
+
+    if (!firstName || !lastName || !major || !gradYear) {
+      alert('All fields are required');
+      return;
+    }
+
+    onSubmit({
+      firstName: firstName,
+      lastName: lastName,
+      major: major,
+      graduationYear: gradYear
+    });
   };
 
   const handleCancel = () => {

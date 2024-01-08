@@ -25,15 +25,16 @@ function StudentsToolbar() {
         },
         body: JSON.stringify(student),
       });
-        const data = await response.json();
-        const newStudent = {
-          _id: data._id,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          major: data.major,
-          graduationYear: data.graduationYear,
-        };
-        dispatch(setStudents([...students, newStudent]));
+      const data = await response.json();
+      const newStudent = {
+        _id: data._id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        major: data.major,
+        graduationYear: data.graduationYear,
+      };
+      dispatch(setStudents([...students, newStudent]));
+      alert('Student added successfully!')
 
     } catch (error) {
       console.error('Failed to add student:', error);
@@ -44,7 +45,7 @@ function StudentsToolbar() {
 
   const handleUpdateStudent = async (student) => {
     if (selectedStudent) {
-      try{
+      try {
         const response = await fetch(`http://localhost:5000/update_student/${selectedStudent._id.toString()}`, { // Replace with your API endpoint
           method: 'PUT',
           headers: {
@@ -58,6 +59,8 @@ function StudentsToolbar() {
           const updatedStudents = students.filter((student) => student._id.toString() !== updatedStudent._id);
           // Update the Redux store
           dispatch(setStudents([...updatedStudents, updatedStudent]));
+          dispatch(setSelectedStudent(updatedStudent));
+          alert('Student updated successfully!')
         }
       } catch (error) {
         console.error('Failed to update student', error);
@@ -81,6 +84,7 @@ function StudentsToolbar() {
           // Update the Redux store
           dispatch(setStudents(updatedStudents));
           dispatch(setSelectedStudent(null));
+          alert('Student deleted successfully!')
         }
       } catch (error) {
         console.error('Failed to delete student', error);
@@ -95,13 +99,13 @@ function StudentsToolbar() {
       <Button variant="contained" color="primary" onClick={() => setAddOpen(true)}>Add Student</Button>
       <Modal open={addOpen} onClose={() => setAddOpen(false)}>
         <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
-          <StudentForm onSubmit={handleAddStudent} onCancel={() => setAddOpen(false)} isUpdating={false}/>
+          <StudentForm onSubmit={handleAddStudent} onCancel={() => setAddOpen(false)} isUpdating={false} />
         </Box>
       </Modal>
       <Button variant="contained" color="primary" onClick={() => setUpdateOpen(true)} disabled={!selectedStudent}>Update Student</Button>
       <Modal open={updateOpen} onClose={() => setUpdateOpen(false)}>
         <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
-          <StudentForm onSubmit={handleUpdateStudent} onCancel={() => setUpdateOpen(false)} isUpdating={true}/>
+          <StudentForm onSubmit={handleUpdateStudent} onCancel={() => setUpdateOpen(false)} isUpdating={true} />
         </Box>
       </Modal>
       <Button variant="contained" color="primary" onClick={() => setDeleteOpen(true)} disabled={!selectedStudent}>Delete Student</Button>

@@ -8,7 +8,7 @@ function StudentsList() {
   const dispatch = useDispatch();
   const students = useSelector(state => state.students.allStudents); // Select the students state from the Redux store
   const [selectionModel, setSelectionModel] = useState([]);
-  
+
   const handleRowSelectionChange = (newSelection) => {
     const selectedId = newSelection[newSelection.length - 1];
     setSelectionModel([selectedId]);
