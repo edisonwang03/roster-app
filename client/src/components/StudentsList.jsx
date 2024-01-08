@@ -36,26 +36,29 @@ function StudentsList() {
   }, [dispatch]); // Add dispatch to the dependency array
 
   const columns = [
-    { field: 'firstName', headerName: 'First name', width: 130 },
-    { field: 'lastName', headerName: 'Last name', width: 130 },
-    { field: 'major', headerName: 'Major', width: 130 },
-    { field: 'graduationYear', headerName: 'Graduation Year', width: 160 },
+    { field: 'firstName', headerName: 'First name', flex: 1 },
+    { field: 'lastName', headerName: 'Last name', flex: 1 },
+    { field: 'major', headerName: 'Major', flex: 1 },
+    { field: 'graduationYear', headerName: 'Graduation Year', flex: 1 },
   ];
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      {students && <DataGrid
-        initialState={{
-          pagination: { paginationModel: { pageSize: 5 } },
+    <div>
+      <h1>Student Roster</h1>
+      <div style={{ height: 400, width: '100%' }}>
+        {students && <DataGrid
+          initialState={{
+            pagination: { paginationModel: { pageSize: 5 } },
 
-        }}
-        pageSizeOptions={[5, 10, 20]}
-        rows={Array.from(students)}
-        columns={columns}
-        selectionModel={selectionModel}
-        onRowSelectionModelChange={handleRowSelectionChange}
-        getRowId={(row) => row._id}
-      />}
+          }}
+          pageSizeOptions={[5, 10, 20]}
+          rows={Array.from(students)}
+          columns={columns}
+          selectionModel={selectionModel}
+          onRowSelectionModelChange={handleRowSelectionChange}
+          getRowId={(row) => row._id}
+        />}
+      </div>
     </div>
   );
 }

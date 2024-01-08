@@ -52,3 +52,23 @@ def get_all_students():
         student['_id'] = str(student['_id'])  # Convert ObjectId to string
         students_list.append(student)
     return {"students": students_list}
+
+@app.route('/get_all_majors', methods=['GET'])
+def get_all_majors():
+    majors = db.students.distinct('major')
+    return {'majors': majors}, 200
+
+@app.route('/get_all_grad_years', methods=['GET'])
+def get_all_grad_years():
+    grad_years = db.students.distinct('graduationYear')
+    return {'graduationYears': grad_years}, 200
+
+@app.route('/count_students_by_major/<major>', methods=['GET'])
+def count_students(major):
+    count = db.students.count_documents({'major': major})
+    return {'count': count}, 200
+
+@app.route('/count_students_by_year/<grad_year>', methods=['GET'])
+def count_students_by_year(grad_year):
+    count = db.students.count_documents({'graduationYear': grad_year})
+    return {'count': count}, 200
