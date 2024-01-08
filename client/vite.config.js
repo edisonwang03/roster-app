@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 5001,
+    port: process.env.FRONTEND_PORT || 5001,
     watch: {
       ignored: 'vite.config.js'
     }

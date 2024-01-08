@@ -6,9 +6,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5001:5001'
+    env_file:
+      - ./.env
   backend:
     build: 
       context: ./server
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
+    env_file:
+      - ./.env
