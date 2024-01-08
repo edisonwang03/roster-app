@@ -1,11 +1,20 @@
-import React, { useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useSelector, useDispatch } from 'react-redux';
 import { setStudents } from '../state/index.js';
+import { setSelectedStudent } from '../state/index.js';
 
 function StudentsList() {
   const dispatch = useDispatch();
-  const students = useSelector(state => state.students); // Select the students state from the Redux store
+  const students = useSelector(state => state.students.allStudents); // Select the students state from the Redux store
+  const [selectionModel, setSelectionModel] = useState([]);
+  
+  const handleRowSelectionChange = (newSelection) => {
+    const selectedId = newSelection[newSelection.length - 1];
+    setSelectionModel([selectedId]);
+    const selectedStudent = students.find((student) => student.id === selectedId);
+    dispatch(setSelectedStudent(selectedStudent));
+  };
 
   useEffect(() => {
     fetch('http://localhost:5000/get_all_students')
@@ -36,10 +45,15 @@ function StudentsList() {
   return (
     <div style={{ height: 400, width: '100%' }}>
       {students && <DataGrid
+        initialState={{
+          pagination: { paginationModel: { pageSize: 5 } },
+
+        }}
+        pageSizeOptions={[5, 10, 20]}
         rows={Array.from(students)}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        selectionModel={selectionModel}
+        onRowSelectionModelChange={handleRowSelectionChange}
       />}
     </div>
   );

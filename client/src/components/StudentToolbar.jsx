@@ -1,24 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setStudents } from '../state/index.js';
+import { setSelectedStudent, setStudents } from '../state/index.js';
 import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import StudentForm from './StudentForm';
 
-function StudentsToolbar({ selectedStudent, setSelectedStudent }) {
+function StudentsToolbar() {
   const dispatch = useDispatch();
-  const [open, setOpen] = useState(false);
-  const students = useSelector(state => state.students);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const students = useSelector(state => state.students.allStudents);
+  const selectedStudent = useSelector(state => state.students.selectedStudent);
+  const [addOpen, setAddOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleAddStudent = async (student) => {
     try {
@@ -29,8 +23,6 @@ function StudentsToolbar({ selectedStudent, setSelectedStudent }) {
         },
         body: JSON.stringify(student),
       });
-  
-      if (response.ok) {
         const data = await response.json();
         const newStudent = {
           id: data._id,
@@ -40,15 +32,11 @@ function StudentsToolbar({ selectedStudent, setSelectedStudent }) {
           graduationYear: data.graduation_year,
         };
         dispatch(setStudents([...students, newStudent]));
-      
-        handleClose();
-      } else {
-        console.error('Failed to add student:', response);
-      }
+
     } catch (error) {
       console.error('Failed to add student:', error);
     } finally {
-      handleClose();
+      setAddOpen(false);
     }
   };
 
@@ -58,16 +46,30 @@ function StudentsToolbar({ selectedStudent, setSelectedStudent }) {
     }
   };
 
-  const handleDeleteStudent = () => {
+  const handleDeleteStudent = async () => {
     if (selectedStudent) {
-      // Delete student logic goes here
+      try {
+        const response = await fetch(`http://localhost:5000/delete_student/${selectedStudent.id}`, { // Replace with your API endpoint
+          method: 'DELETE',
+        });
+        const deletedStudent = await response.json();
+        if (deletedStudent) {
+          // Filter out the deleted student from the students array
+          const updatedStudents = students.filter((student) => student.id !== deletedStudent._id);
+          // Update the Redux store
+          dispatch(setStudents(updatedStudents));
+          dispatch(setSelectedStudent(null));
+        }
+      } catch (error) {
+        console.error('Failed to delete student', error);
+      }
     }
   };
 
   return (
     <div className="toolbar">
-      <Button variant="contained" color="primary" onClick={handleOpen}>Add Student</Button>
-      <Modal open={open} onClose={handleClose}>
+      <Button variant="contained" color="primary" onClick={() => setAddOpen(true)}>Add Student</Button>
+      <Modal open={addOpen} onClose={() => setAddOpen(false)}>
         <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
           <StudentForm onSubmit={handleAddStudent} />
         </Box>

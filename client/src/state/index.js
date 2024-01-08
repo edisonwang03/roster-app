@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    students: [],
+    allStudents: [],
+    selectedStudent: null,
 };
 
 const studentsSlice = createSlice({
@@ -9,10 +10,15 @@ const studentsSlice = createSlice({
     initialState,
     reducers: {
       setStudents: (state, action) => {
-        return action.payload;
+        state.allStudents = action.payload;
+        console.log(state.allStudents)
+      },
+      setSelectedStudent: (state, action) => {
+        state.selectedStudent = action.payload;
+        console.log(state.selectedStudent)
       }
     },
   });
   
-export const { setStudents } = studentsSlice.actions;
+export const { setStudents, setSelectedStudent} = studentsSlice.actions;
 export default studentsSlice.reducer;

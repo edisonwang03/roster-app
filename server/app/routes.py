@@ -18,8 +18,16 @@ def update_student(student_id):
 
 @app.route('/delete_student/<student_id>', methods=['DELETE'])
 def delete_student(student_id):
-    db.students.delete_one({'_id': ObjectId(student_id)})
-    return {"message": "Student deleted successfully!"}, 200
+    # Find the student
+    student = db.students.find_one({'_id': ObjectId(student_id)})
+    if student:
+        # Convert ObjectId to string
+        student['_id'] = str(student['_id'])
+        # Delete the student
+        db.students.delete_one({'_id': ObjectId(student_id)})
+        return student, 200
+    else:
+        return {"message": "Student not found"}, 404
 
 @app.route('/get_student/<student_id>', methods=['GET'])
 def get_student(student_id):
