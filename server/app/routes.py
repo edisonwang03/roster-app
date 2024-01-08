@@ -6,8 +6,9 @@ from app import db
 @app.route('/add_student', methods=['POST'])
 def add_student():
     student_data = request.get_json()
-    db.students.insert_one(student_data)
-    return {"message": "Student added successfully!"}, 200
+    result = db.students.insert_one(student_data)
+    student_data['_id'] = str(result.inserted_id)  # Convert ObjectId to string
+    return student_data, 200
 
 @app.route('/update_student/<student_id>', methods=['PUT'])
 def update_student(student_id):
