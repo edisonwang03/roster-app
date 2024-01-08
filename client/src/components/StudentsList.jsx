@@ -12,7 +12,7 @@ function StudentsList() {
   const handleRowSelectionChange = (newSelection) => {
     const selectedId = newSelection[newSelection.length - 1];
     setSelectionModel([selectedId]);
-    const selectedStudent = students.find((student) => student.id === selectedId);
+    const selectedStudent = students.find((student) => student._id === selectedId);
     dispatch(setSelectedStudent(selectedStudent));
   };
 
@@ -22,11 +22,11 @@ function StudentsList() {
       .then(data => {
         // Map the data to match the DataGrid component's format
         const formattedData = data.students.map((student) => ({
-          id: student._id,
-          firstName: student.first_name,
-          lastName: student.last_name,
+          _id: student._id.toString(),
+          firstName: student.firstName,
+          lastName: student.lastName,
           major: student.major,
-          graduationYear: student.graduation_year,
+          graduationYear: student.graduationYear,
         }));
         dispatch(setStudents(formattedData)); // Dispatch the setStudents action with the formatted data
       })
@@ -54,6 +54,7 @@ function StudentsList() {
         columns={columns}
         selectionModel={selectionModel}
         onRowSelectionModelChange={handleRowSelectionChange}
+        getRowId={(row) => row._id}
       />}
     </div>
   );

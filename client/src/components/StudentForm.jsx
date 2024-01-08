@@ -3,20 +3,26 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Input from '@mui/material/Input';
+import { useSelector } from 'react-redux';
 
-function StudentForm({ onSubmit }) {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [major, setMajor] = useState('');
-  const [gradYear, setGradYear] = useState('');
+function StudentForm({ onSubmit, onCancel, isUpdating }) {
+  const { selectedStudent } = useSelector(state => state.students);
+  const [firstName, setFirstName] = useState(isUpdating ? selectedStudent.firstName : '');
+  const [lastName, setLastName] = useState(isUpdating ? selectedStudent.lastName : '');
+  const [major, setMajor] = useState(isUpdating ? selectedStudent.major : '');
+  const [gradYear, setGradYear] = useState(isUpdating ? selectedStudent.graduationYear : '');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit({ first_name: firstName,
-        last_name: lastName,
+    onSubmit({ firstName: firstName,
+        lastName: lastName,
         major: major,
-        graduation_year: gradYear });
+        graduationYear: gradYear });
   };
+
+  const handleCancel = () => {
+    onCancel();
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -36,7 +42,8 @@ function StudentForm({ onSubmit }) {
         <InputLabel>Graduation Year</InputLabel>
         <Input value={gradYear} onChange={(e) => setGradYear(e.target.value)} />
       </FormControl>
-      <Button type="submit" variant="contained" color="primary">Add Student</Button>
+      <Button type="submit" variant="contained" color="primary" >{isUpdating ? 'Update Student' : 'Add Student'}</Button>
+      <Button type="button" variant="contained" color="secondary" onClick={handleCancel}>Cancel</Button>
     </form>
   );
 }

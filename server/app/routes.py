@@ -1,5 +1,6 @@
 from flask import request
 from bson.objectid import ObjectId
+from pymongo import ReturnDocument
 from app import app
 from app import db
 
@@ -13,8 +14,16 @@ def add_student():
 @app.route('/update_student/<student_id>', methods=['PUT'])
 def update_student(student_id):
     student_data = request.get_json()
-    db.students.update_one({'_id': ObjectId(student_id)}, {'$set': student_data})
-    return {"message": "Student updated successfully!"}, 200
+    updated_student = db.students.find_one_and_update(
+        {'_id': ObjectId(student_id)}, 
+        {'$set': student_data}, 
+        return_document=ReturnDocument.AFTER
+    )
+    if updated_student:
+        updated_student['_id'] = str(updated_student['_id'])  # Convert ObjectId to string
+        return updated_student, 200
+    else:
+        return {"message": "Student not found"}, 404
 
 @app.route('/delete_student/<student_id>', methods=['DELETE'])
 def delete_student(student_id):

@@ -6,12 +6,14 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import StudentForm from './StudentForm';
+import Typography from '@mui/material/Typography';
 
 function StudentsToolbar() {
   const dispatch = useDispatch();
   const students = useSelector(state => state.students.allStudents);
   const selectedStudent = useSelector(state => state.students.selectedStudent);
   const [addOpen, setAddOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleAddStudent = async (student) => {
@@ -25,11 +27,11 @@ function StudentsToolbar() {
       });
         const data = await response.json();
         const newStudent = {
-          id: data._id,
-          firstName: data.first_name,
-          lastName: data.last_name,
+          _id: data._id,
+          firstName: data.firstName,
+          lastName: data.lastName,
           major: data.major,
-          graduationYear: data.graduation_year,
+          graduationYear: data.graduationYear,
         };
         dispatch(setStudents([...students, newStudent]));
 
@@ -40,28 +42,50 @@ function StudentsToolbar() {
     }
   };
 
-  const handleUpdateStudent = () => {
+  const handleUpdateStudent = async (student) => {
     if (selectedStudent) {
-      // Update student logic goes here
+      try{
+        const response = await fetch(`http://localhost:5000/update_student/${selectedStudent._id.toString()}`, { // Replace with your API endpoint
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(student),
+        });
+        const updatedStudent = await response.json();
+        if (updatedStudent) {
+          // Filter out the updated student from the students array
+          const updatedStudents = students.filter((student) => student._id.toString() !== updatedStudent._id);
+          // Update the Redux store
+          dispatch(setStudents([...updatedStudents, updatedStudent]));
+        }
+      } catch (error) {
+        console.error('Failed to update student', error);
+      } finally {
+        setUpdateOpen(false);
+      }
     }
   };
 
   const handleDeleteStudent = async () => {
     if (selectedStudent) {
       try {
-        const response = await fetch(`http://localhost:5000/delete_student/${selectedStudent.id}`, { // Replace with your API endpoint
+        console.log(selectedStudent._id.toString());
+        const response = await fetch(`http://localhost:5000/delete_student/${selectedStudent._id.toString()}`, { // Replace with your API endpoint
           method: 'DELETE',
         });
         const deletedStudent = await response.json();
         if (deletedStudent) {
           // Filter out the deleted student from the students array
-          const updatedStudents = students.filter((student) => student.id !== deletedStudent._id);
+          const updatedStudents = students.filter((student) => student._id.toString() !== deletedStudent._id);
           // Update the Redux store
           dispatch(setStudents(updatedStudents));
           dispatch(setSelectedStudent(null));
         }
       } catch (error) {
         console.error('Failed to delete student', error);
+      } finally {
+        setDeleteOpen(false);
       }
     }
   };
@@ -71,11 +95,23 @@ function StudentsToolbar() {
       <Button variant="contained" color="primary" onClick={() => setAddOpen(true)}>Add Student</Button>
       <Modal open={addOpen} onClose={() => setAddOpen(false)}>
         <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
-          <StudentForm onSubmit={handleAddStudent} />
+          <StudentForm onSubmit={handleAddStudent} onCancel={() => setAddOpen(false)} isUpdating={false}/>
         </Box>
       </Modal>
-      <Button variant="contained" color="primary" onClick={handleUpdateStudent}>Update Student</Button>
-      <Button variant="contained" color="primary" onClick={handleDeleteStudent}>Delete Student</Button>
+      <Button variant="contained" color="primary" onClick={() => setUpdateOpen(true)} disabled={!selectedStudent}>Update Student</Button>
+      <Modal open={updateOpen} onClose={() => setUpdateOpen(false)}>
+        <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
+          <StudentForm onSubmit={handleUpdateStudent} onCancel={() => setUpdateOpen(false)} isUpdating={true}/>
+        </Box>
+      </Modal>
+      <Button variant="contained" color="primary" onClick={() => setDeleteOpen(true)} disabled={!selectedStudent}>Delete Student</Button>
+      <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+        <Box sx={{ width: 400, padding: 4, backgroundColor: 'white', margin: 'auto', marginTop: '15%', outline: 'none' }}>
+          <Typography variant="h6">Are you sure you want to delete this student?</Typography>
+          <Button variant="contained" color="primary" onClick={handleDeleteStudent}>Yes</Button>
+          <Button variant="contained" color="secondary" onClick={() => setDeleteOpen(false)}>No</Button>
+        </Box>
+      </Modal>
     </div>
   );
 }
