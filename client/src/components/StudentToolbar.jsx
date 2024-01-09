@@ -18,7 +18,7 @@ function StudentsToolbar() {
 
   const handleAddStudent = async (student) => {
     try {
-      const response = await fetch('http://localhost:5000/add_student', { // Replace with your API endpoint
+      const response = await fetch('http://localhost:5000/add_student', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ function StudentsToolbar() {
   const handleUpdateStudent = async (student) => {
     if (selectedStudent) {
       try {
-        const response = await fetch(`http://localhost:5000/update_student/${selectedStudent._id.toString()}`, { // Replace with your API endpoint
+        const response = await fetch(`http://localhost:5000/update_student/${selectedStudent._id.toString()}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -55,9 +55,7 @@ function StudentsToolbar() {
         });
         const updatedStudent = await response.json();
         if (updatedStudent) {
-          // Filter out the updated student from the students array
           const updatedStudents = students.filter((student) => student._id.toString() !== updatedStudent._id);
-          // Update the Redux store
           dispatch(setStudents([...updatedStudents, updatedStudent]));
           dispatch(setSelectedStudent(updatedStudent));
           alert('Student updated successfully!')
@@ -74,14 +72,12 @@ function StudentsToolbar() {
     if (selectedStudent) {
       try {
         console.log(selectedStudent._id.toString());
-        const response = await fetch(`http://localhost:5000/delete_student/${selectedStudent._id.toString()}`, { // Replace with your API endpoint
+        const response = await fetch(`http://localhost:5000/delete_student/${selectedStudent._id.toString()}`, { 
           method: 'DELETE',
         });
         const deletedStudent = await response.json();
         if (deletedStudent) {
-          // Filter out the deleted student from the students array
           const updatedStudents = students.filter((student) => student._id.toString() !== deletedStudent._id);
-          // Update the Redux store
           dispatch(setStudents(updatedStudents));
           dispatch(setSelectedStudent(null));
           alert('Student deleted successfully!')

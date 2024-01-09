@@ -6,7 +6,7 @@ import { setSelectedStudent } from '../state/index.js';
 
 function StudentsList() {
   const dispatch = useDispatch();
-  const students = useSelector(state => state.students.allStudents); // Select the students state from the Redux store
+  const students = useSelector(state => state.students.allStudents);
   const [selectionModel, setSelectionModel] = useState([]);
 
   const handleRowSelectionChange = (newSelection) => {
@@ -20,7 +20,6 @@ function StudentsList() {
     fetch('http://localhost:5000/get_all_students')
       .then(response => response.json())
       .then(data => {
-        // Map the data to match the DataGrid component's format
         const formattedData = data.students.map((student) => ({
           _id: student._id.toString(),
           firstName: student.firstName,
@@ -28,12 +27,12 @@ function StudentsList() {
           major: student.major,
           graduationYear: student.graduationYear,
         }));
-        dispatch(setStudents(formattedData)); // Dispatch the setStudents action with the formatted data
+        dispatch(setStudents(formattedData));
       })
       .catch(error => {
         console.error('There was an error!', error);
       });
-  }, [dispatch]); // Add dispatch to the dependency array
+  }, [dispatch]);
 
   const columns = [
     { field: 'firstName', headerName: 'First name', flex: 1 },

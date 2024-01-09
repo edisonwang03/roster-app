@@ -49,7 +49,7 @@ def get_all_students():
     students = db.students.find()
     students_list = []
     for student in students:
-        student['_id'] = str(student['_id'])  # Convert ObjectId to string
+        student['_id'] = str(student['_id'])
         students_list.append(student)
     return {"students": students_list}
 
